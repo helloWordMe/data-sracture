@@ -168,4 +168,3 @@ if __name__ == '__main__':
     sorted_list = sort_linked_list(xor_list)
     print('لیست مرتب شده')
     print(f'{sorted_list}')
-    
