@@ -1,7 +1,10 @@
 from abc import ABC , abstractmethod
 from typing import TypeVar , Generic
 import weakref 
-import threading 
+import threading
+from typing import Optional
+import random
+
 T = TypeVar('T')
 
 #و نوشتن تابع سورت بیرون کلاس xor linked list پیاده سازی 
@@ -46,7 +49,7 @@ class XORLinkedListClass(XORLinkedListInterface[T]):
     def _xor(self, head, tail):
         return head ^ tail if head and tail else head or tail
 
-    def _drefrence_pointer(self, id_node)-> Node:
+    def _drefrence_pointer(self, id_node)->Optional[Node]:
         for node in self._nodes:
             if id(node) == id_node:
                 return node
@@ -111,13 +114,13 @@ class XORLinkedListClass(XORLinkedListInterface[T]):
             else:
                 prev_node_id = self.tail.xor_pointer
                 prev_node = self._drefrence_pointer(prev_node_id)
-                prev_node.xor_pointer = self._xor_address(id(self.tail), prev_node.xor_pointer)
+                prev_node.xor_pointer = self._xor(id(self.tail), prev_node.xor_pointer)
                 self.tail = prev_node
 
             self.size -= 1    
         
     
-def sort_linked_lit(xor_linked_list : XORLinkedListClass):
+def sort_linked_list(xor_linked_list : XORLinkedListClass):
     """
     we want to sort xor linked list by using just XORLinkedListClass methods... 
     """     
@@ -140,16 +143,29 @@ def sort_linked_lit(xor_linked_list : XORLinkedListClass):
             while next_node and next_node.data < current_value : 
                 prev = next_node
                 next_id = xor_linked_list._xor(id(prev), next_node.xor_pointer)
-                next_node = xor_linked_list._dereference_pointer(next_id)
+                next_node = xor_linked_list._drefrence_pointer(next_id)
 
 
             if next_node is None:  
                 xor_linked_list.insert_back(current_value)
             else:  
-                xor_linked_list.insert_front(current_value)                
+                xor_linked_list.insert_front(current_value) 
+    return xor_linked_list            
 
 
+if __name__ == '__main__':
+    xor_list = XORLinkedListClass[int]()
+    for i in range(20):
+        num = random.randint(0,100)
+        if i/2==0 :
+            xor_list.insert_front(num)
+        else:
+            xor_list.insert_back(num)
+    xor_list.insert_front(1)
 
-
-
+    print('لیست مرتب نشده')
+    print(f'{xor_list}')
+    sorted_list = sort_linked_list(xor_list)
+    print('لیست مرتب شده')
+    print(f'{sorted_list}')
     
