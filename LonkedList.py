@@ -1,15 +1,19 @@
 from abc import ABC , abstractmethod
 import weakref 
+from typing import TypeVar , Generic
+
+T = TypeVar('T')
+
 #و نوشتن تابع سورت بیرون کلاس xor linked list پیاده سازی 
 # we can xor to variable using ^ in python 
-class XORLinkedListInterface(ABC):
+class XORLinkedListInterface(ABC, Generic[T]):
 
     @abstractmethod
-    def insert_front(self, value):
+    def insert_front(self, value : T):
         pass
     
     @abstractmethod
-    def insert_back(self, value):
+    def insert_back(self, value : T):
         pass
     
     @abstractmethod
@@ -28,7 +32,7 @@ class Node:
         self.xor_pointer = 0  
 
 
-class XORLinkedListClass(XORLinkedListInterface):  
+class XORLinkedListClass(XORLinkedListInterface[T]):  
     def __init__(self):
         self.size = 0
         self.head = None
@@ -49,7 +53,7 @@ class XORLinkedListClass(XORLinkedListInterface):
 
 
 
-    def insert_front(self, value):
+    def insert_front(self, value : T):
         new_node = Node(value)
 
         if self.head is None:
@@ -64,7 +68,7 @@ class XORLinkedListClass(XORLinkedListInterface):
 
         
     
-    def insert_back(self, value):
+    def insert_back(self, value : T):
         
         new_node = Node(value)
         if self.tail is None : 
