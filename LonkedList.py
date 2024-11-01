@@ -1,7 +1,7 @@
 from abc import ABC , abstractmethod
-import weakref 
 from typing import TypeVar , Generic
-
+import weakref 
+import threading 
 T = TypeVar('T')
 
 #و نوشتن تابع سورت بیرون کلاس xor linked list پیاده سازی 
@@ -37,6 +37,7 @@ class XORLinkedListClass(XORLinkedListInterface[T]):
         self.size = 0
         self.head = None
         self.tail = None
+        self.lock = threading.Lock()
         self._nodes = weakref.WeakSet()
         #inmanagement languge becase we cant use address this make to not lost ower data
 
@@ -54,63 +55,66 @@ class XORLinkedListClass(XORLinkedListInterface[T]):
 
 
     def insert_front(self, value : T):
-        new_node = Node(value)
+        with self.lock : 
+            new_node = Node(value)
 
-        if self.head is None:
-            self.head = self.tail = new_node
-        
-        else:
-            new_node.xor_pointer = id(self.head)
-            self.head.xor_pointer = self._xor(id(new_node),self.head.xor_pointer)
-            self.head = new_node
-        self.size += 1
-        self._nodes.add(new_node)
+            if self.head is None:
+                self.head = self.tail = new_node
+            
+            else:
+                new_node.xor_pointer = id(self.head)
+                self.head.xor_pointer = self._xor(id(new_node),self.head.xor_pointer)
+                self.head = new_node
+            self.size += 1
+            self._nodes.add(new_node)
 
         
     
     def insert_back(self, value : T):
-        
-        new_node = Node(value)
-        if self.tail is None : 
-            self.tail = new_node
+        with self.lock : 
+            new_node = Node(value)
+            if self.tail is None : 
+                self.tail = new_node
 
-        else : 
-            new_node.xor_pointer = id(self.tail)
-            self.tail.xor_pointer = self._xor(id(new_node), self.tail.xor_pointer)
-            self.tail = new_node
+            else : 
+                new_node.xor_pointer = id(self.tail)
+                self.tail.xor_pointer = self._xor(id(new_node), self.tail.xor_pointer)
+                self.tail = new_node
 
-        self.size += 1
-        self._nodes.add(new_node)    
+            self.size += 1
+            self._nodes.add(new_node)    
     
     def remove_front(self):
-        if self.head is None : 
-            raise Exception('this list is empty  !')
-        
-        if self.head == self.tail : 
-            self.head = self.tail = None
-        
-        else:
-            next_node_id = self.head.xor_pointer
-            next_node = self._drefrence_pointer(next_node_id)
-            next_node.xor_pointer = self._xor(id(self.head), next_node.xor_pointer)
-            self.head = next_node
+        with self.lock: 
+            if self.head is None : 
+                raise Exception('this list is empty  !')
+            
+            if self.head == self.tail : 
+                self.head = self.tail = None
+            
+            else:
+                next_node_id = self.head.xor_pointer
+                next_node = self._drefrence_pointer(next_node_id)
+                next_node.xor_pointer = self._xor(id(self.head), next_node.xor_pointer)
+                self.head = next_node
 
-        self.size -= 1    
+            self.size -= 1    
     
     def remove_back(self):
-        if self.tail is None:
-            raise Exception ('this list is empty')
-        
-        if self.tail == self.head : 
-            self.head = self.tail = None
+        with self.lock: 
+            if self.tail is None:
+                raise Exception ('this list is empty')
+            
+            if self.tail == self.head : 
+                self.head = self.tail = None
 
-        else:
-            prev_node_id = self.tail.xor_pointer
-            prev_node = self._drefrence_pointer(prev_node_id)
-            prev_node.xor_pointer = self._xor_address(id(self.tail), prev_node.xor_pointer)
-            self.tail = prev_node
+            else:
+                prev_node_id = self.tail.xor_pointer
+                prev_node = self._drefrence_pointer(prev_node_id)
+                prev_node.xor_pointer = self._xor_address(id(self.tail), prev_node.xor_pointer)
+                self.tail = prev_node
 
-        self.size -= 1    
+            self.size -= 1    
         
     
 def sort_linked_lit(xor_linked_list : XORLinkedListClass):
