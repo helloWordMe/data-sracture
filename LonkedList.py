@@ -113,5 +113,39 @@ class XORLinkedListClass(XORLinkedListInterface[T]):
         self.size -= 1    
         
     
-def sort_linked_lit():
-    pass     
+def sort_linked_lit(xor_linked_list : XORLinkedListClass):
+    """
+    we want to sort xor linked list by using just XORLinkedListClass methods... 
+    """     
+
+    if xor_linked_list is None :
+        print("This xor linked class is empty !!")
+        return
+
+    for _ in range(xor_linked_list.size):
+        current_value = xor_linked_list.tail.data
+        xor_linked_list.remove_back()    
+
+        if xor_linked_list.head is None or current_value <= xor_linked_list.head.data : 
+            xor_linked_list.insert_front(current_value)
+        
+        else :
+            prev = None
+            next_node = xor_linked_list.head
+            
+            while next_node and next_node.data < current_value : 
+                prev = next_node
+                next_id = xor_linked_list._xor(id(prev), next_node.xor_pointer)
+                next_node = xor_linked_list._dereference_pointer(next_id)
+
+
+            if next_node is None:  
+                xor_linked_list.insert_back(current_value)
+            else:  
+                xor_linked_list.insert_front(current_value)                
+
+
+
+
+
+    
